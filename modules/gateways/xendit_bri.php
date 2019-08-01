@@ -67,47 +67,47 @@ function xendit_bri_config()
         // the friendly display name for a payment gateway should be
         // defined here for backwards compatibility
         'FriendlyName' => array(
-            'Type' => 'System',
+            'Type'  => 'System',
             'Value' => 'Xendit BRI Virtual Account',
         ),
         // a text field type allows for single line text input
         'apikey' => array(
-            'FriendlyName' => 'Xendit Public API Keys',
-            'Type' => 'text',
-            'Size' => '50',
-            'Default' => '',
-            'Description' => 'Input Xendit Public API Keys.',
+            'FriendlyName'  => 'Xendit Private API Keys',
+            'Type'          => 'text',
+            'Size'          => '100',
+            'Default'       => '',
+            'Description'   => 'Input Xendit Private API Keys.',
         ),
         // a text field type allows for single line text input
         'paymentfee' => array(
-            'FriendlyName' => 'Payment Fee',
-            'Type' => 'text',
-			'Size' => '100',
-			'Default' => '4000',
-            'Description' => 'Fixed Amount Payment Fee Will Added to Invoice and Pay by Client.',
+            'FriendlyName'  => 'Payment Fee',
+            'Type'          => 'text',
+            'Size'          => '100',
+            'Default'       => '4000',
+            'Description'   => 'Fixed Amount Payment Fee Will Added to Invoice and Pay by Client.',
         ),
         // the dropdown field type renders a select menu of options
         'expired' => array(
-            'FriendlyName' => 'Time Invoice Expired',
-            'Type' => 'dropdown',
-            'Options' => array(
-                '300' => '5 Minutes',
-                '900' => '15 Minutes',
-                '1800' => '30 Minutes',
-                '3600' => '1 Hour',
-                '10800' => '3 Hours',
-                '21600' => '6 Hours',
-                '43200' => '12 Hours',
-                '86400' => '1 Day',
-                '259200' => '3 Days',
+            'FriendlyName'  => 'Time Invoice Expired',
+            'Type'          => 'dropdown',
+            'Options'       => array(
+                    '300'       => '5 Minutes',
+                    '900'       => '15 Minutes',
+                    '1800'      => '30 Minutes',
+                    '3600'      => '1 Hour',
+                    '10800'     => '3 Hours',
+                    '21600'     => '6 Hours',
+                    '43200'     => '12 Hours',
+                    '86400'     => '1 Day',
+                    '259200'    => '3 Days',
             ),
-            'Description' => 'Select Duration Time For Invoice Expired.',
+            'Description'   => 'Select Duration Time For Invoice Expired.',
         ),
         // the yesno field type displays a single checkbox option
         'sendemail' => array(
-            'FriendlyName' => 'Send Invoice Email',
-            'Type' => 'yesno',
-            'Description' => 'Allow Xendit Will Send Invoice to Client',
+            'FriendlyName'  => 'Send Invoice Email',
+            'Type'          => 'yesno',
+            'Description'   => 'Allow Xendit Send Email Invoice to Client',
         ),
     );
 }
