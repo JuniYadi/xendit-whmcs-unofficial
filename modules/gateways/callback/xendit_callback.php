@@ -5,21 +5,36 @@ $whmcs->load_function("invoice");
 
 // check if the module is activated
 /*--- start ---*/
-$$gatewayModuleName = 'xendit_invoice';
+$gatewayModuleName  = '';
+$paymentCode        = htmlspecialchars($_POST['bank_code']);
+
+switch ($paymentCode) {
+	case "BCA":
+		$gatewayModuleName = "xendit_bca"; break;
+	case "BNI":
+		$gatewayModuleName = "xendit_bni"; break;
+	case "BRI":
+		$gatewayModuleName = "xendit_bri"; break;
+	case "MANDIRI":
+		$gatewayModuleName = "xendit_mandiri"; break;
+    default:
+		throw new Exception('payment method not recognize.');
+}
+
 $gatewayParams = getGatewayVariables($gatewayModuleName);
 if (!$gatewayParams['type']) {
 	exit("Module Not Activated");
 }
 
 /*--- end ---*/
-$xenditId 		    = htmlspecialchars($_POST['id']);
-$xenditUserId 	    = htmlspecialchars($_POST['user_id']);
-$order_id 		    = htmlspecialchars($_POST['external_id']);
+$xenditId           = htmlspecialchars($_POST['id']);
+$xenditUserId       = htmlspecialchars($_POST['user_id']);
+$invoiceId          = htmlspecialchars($_POST['external_id']);
 $status             = htmlspecialchars($_POST['status']);
-$email			    = htmlspecialchars($_POST['payer_email']);
-$paymentMethod	    = htmlspecialchars($_POST['payment_method']);
-$paymentAmount 	    = htmlspecialchars($_POST['adjusted_received_amount']);
-$reference 		    = strtoupper($paymentMethod.$xenditId);
+$email              = htmlspecialchars($_POST['payer_email']);
+$paymentMethod      = htmlspecialchars($_POST['payment_method']);
+$paymentAmount      = htmlspecialchars($_POST['adjusted_received_amount']);
+$reference          = strtoupper($paymentMethod.$xenditId);
 
 //set parameters for Xendit inquiry
 $endpoint       	= $gatewayParams['endpoint'];
@@ -41,7 +56,7 @@ $sendemail      	= $gatewayParams['sendemail'];
  * Returns a normalised invoice ID.
  */
 
-$order_id = checkCbInvoiceID($order_id, $gatewayParams['name']);
+$invoiceId = checkCbInvoiceID($invoiceId, $gatewayParams['name']);
 
 /**
  * Log Transaction.
@@ -79,7 +94,7 @@ if ($success) {
      * @param string $gatewayModule  Gateway module name
      */
     addInvoicePayment(
-        $order_id,
+        $invoiceId,
         $reference,
         $paymentAmount,
         0,
@@ -92,8 +107,6 @@ if ($success) {
 		$orgipn.= ("" . $key . " => " . $value . "\r\n");		
 	}
 	logTransaction($gatewayModuleName, $orgipn, "Xendit Handshake Invalid");
-	header("HTTP/1.0 406 Not Acceptable");
-	exit();
 }
 
 /**
@@ -105,4 +118,4 @@ if ($success) {
  * @param int $invoiceId        Invoice ID
  * @param bool $paymentSuccess  Payment status
  */
-callback3DSecureRedirect($order_id, $status);
+callback3DSecureRedirect($invoiceId, $status);
