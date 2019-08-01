@@ -9,16 +9,17 @@
 * [x] Added Fee Option (If you want you're costumer to pay you're payment gateway fee)
 * [x] Set Expired Invoice Upto 3 Days
 * [x] Allow Xendit to Send Email to Client
-* [ ] Redirect Callback Integration
+* [x] Redirect Callback Integration
+* [x] Automatic confirmation payment on success
 
 ## Payment Support
 | Name Bank    | Support |
 | ------------ | ------- |
+| BCA          | yes     |
+| BNI          | yes     |
 | BRI          | yes     |
-| BNI          | -       |
-| MANDIRI      | -       |
-| BCA          | -       |
-| PERMATA BANK | -       |
+| MANDIRI      | yes     |
+| PERMATA BANK | yes     |
 | Retail       | -       |
 | OVO          | -       |
 | Credit Card  | -       |
@@ -26,6 +27,7 @@
 ## Screenshoot
 ![1.png](screenshoot/1.png)
 ![2.png](screenshoot/2.png)
+![3.png](screenshoot/3.png)
 
 ## INFO
 * By : Juni Yadi
