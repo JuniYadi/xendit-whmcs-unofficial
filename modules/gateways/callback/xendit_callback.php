@@ -3,22 +3,34 @@ require "../../../init.php";
 $whmcs->load_function("gateway");
 $whmcs->load_function("invoice");
 
+// Check Callback Method
+if ($_SERVER["REQUEST_METHOD"] != "POST") {
+    $logs = "Cannot ".$_SERVER["REQUEST_METHOD"]." ".$_SERVER["SCRIPT_NAME"];
+    exit($logs);
+    throw new Exception($logs);
+}
+
+$callback_data = file_get_contents("php://input");
+$data = json_decode($callback_data, TRUE);
+
 // check if the module is activated
 /*--- start ---*/
 $gatewayModuleName  = '';
-$paymentCode        = htmlspecialchars($_POST['bank_code']);
+$paymentCode        = htmlspecialchars($data['bank_code']);
 
 switch ($paymentCode) {
-	case "BCA":
-		$gatewayModuleName = "xendit_bca"; break;
-	case "BNI":
-		$gatewayModuleName = "xendit_bni"; break;
-	case "BRI":
-		$gatewayModuleName = "xendit_bri"; break;
-	case "MANDIRI":
-		$gatewayModuleName = "xendit_mandiri"; break;
-    default:
-		throw new Exception('payment method not recognize.');
+  case "BCA":
+    $gatewayModuleName = "xendit_bca"; break;
+  case "BNI":
+    $gatewayModuleName = "xendit_bni"; break;
+  case "BRI":
+    $gatewayModuleName = "xendit_bri"; break;
+  case "MANDIRI":
+    $gatewayModuleName = "xendit_mandiri"; break;
+  case "PERMATA":
+    $gatewayModuleName = "xendit_permata"; break;    
+  default:
+    throw new Exception('payment method not recognize.');
 }
 
 $gatewayParams = getGatewayVariables($gatewayModuleName);
@@ -27,20 +39,19 @@ if (!$gatewayParams['type']) {
 }
 
 /*--- end ---*/
-$xenditId           = htmlspecialchars($_POST['id']);
-$xenditUserId       = htmlspecialchars($_POST['user_id']);
-$invoiceId          = htmlspecialchars($_POST['external_id']);
-$status             = htmlspecialchars($_POST['status']);
-$email              = htmlspecialchars($_POST['payer_email']);
-$paymentMethod      = htmlspecialchars($_POST['payment_method']);
-$paymentAmount      = htmlspecialchars($_POST['adjusted_received_amount']);
-$reference          = strtoupper($paymentMethod.$xenditId);
+$xenditId           = htmlspecialchars($data['id']);
+$xenditUserId       = htmlspecialchars($data['user_id']);
+$invoiceId          = htmlspecialchars($data['external_id']);
+$status             = htmlspecialchars($data['status']);
+$email              = htmlspecialchars($data['payer_email']);
+$bankCode           = htmlspecialchars($data['bank_code']);
+$paymentMethod      = htmlspecialchars($data['payment_method']);
+$paymentAmount      = htmlspecialchars($data['adjusted_received_amount']);
+$reference          = $bankCode.$xenditId;
 
 //set parameters for Xendit inquiry
 $endpoint       	= $gatewayParams['endpoint'];
-$callbackserverkey	= $gatewayParams['callbackserverkey'];
-$serverkey      	= $gatewayParams['serverkey'];
-$paymentlist    	= $gatewayParams['paymentlist'];
+$apikey      	    = $gatewayParams['apikey'];
 $paymentfee     	= $gatewayParams['paymentfee'];
 $expired        	= $gatewayParams['expired'];
 $sendemail      	= $gatewayParams['sendemail'];
@@ -55,7 +66,6 @@ $sendemail      	= $gatewayParams['sendemail'];
  *
  * Returns a normalised invoice ID.
  */
-
 $invoiceId = checkCbInvoiceID($invoiceId, $gatewayParams['name']);
 
 /**
@@ -70,52 +80,46 @@ $invoiceId = checkCbInvoiceID($invoiceId, $gatewayParams['name']);
  * @param string|array $debugData    Data to log
  * @param string $transactionStatus  Status
  */
-logTransaction($gatewayParams['name'], $_POST, $status);
+logTransaction($gatewayParams['name'], $data, $status);
 
 
 $success = false;
      
-if ($status == 'PAID') {
+if ($status == 'PAID' XOR $status == 'SETTLED') {
 	$success = true;
 } else {
 	$success = false;
 }
 
 if ($success) {
-    /**
-     * Add Invoice Payment.
-     *
-     * Applies a payment transaction entry to the given invoice ID.
-     *
-     * @param int $invoiceId         Invoice ID
-     * @param string $transactionId  Transaction ID
-     * @param float $paymentAmount   Amount paid (defaults to full balance)
-     * @param float $paymentFee      Payment fee (optional)
-     * @param string $gatewayModule  Gateway module name
-     */
+  /**
+   * Add Invoice Payment.
+   *
+   * Applies a payment transaction entry to the given invoice ID.
+   *
+   * @param int $invoiceId         Invoice ID
+   * @param string $transactionId  Transaction ID
+   * @param float $paymentAmount   Amount paid (defaults to full balance)
+   * @param float $paymentFee      Payment fee (optional)
+   * @param string $gatewayModule  Gateway module name
+   */
     addInvoicePayment(
-        $invoiceId,
-        $reference,
-        $paymentAmount,
-        0,
-        $gatewayModuleName
-	);    
+      $invoiceId,
+      $reference,
+      $paymentAmount,
+      0,
+      $gatewayModuleName
+    );
+    echo "Payment success notification accepted";
+
 } else {
 	//Adopted from paypal to log all the failed transaction
 	$orgipn = "";
-	foreach ($_POST as $key => $value) {
+	foreach ($data as $key => $value) {
 		$orgipn.= ("" . $key . " => " . $value . "\r\n");		
 	}
-	logTransaction($gatewayModuleName, $orgipn, "Xendit Handshake Invalid");
+  logTransaction($gatewayModuleName, $orgipn, "Xendit Handshake Invalid");
+  
+  header("HTTP/1.0 406 Not Acceptable");
+	exit();
 }
-
-/**
- * Redirect to invoice.
- *
- * Performs redirect back to the invoice upon completion of the 3D Secure
- * process displaying the transaction result along with the invoice.
- *
- * @param int $invoiceId        Invoice ID
- * @param bool $paymentSuccess  Payment status
- */
-callback3DSecureRedirect($invoiceId, $status);
