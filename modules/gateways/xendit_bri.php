@@ -83,7 +83,7 @@ function xendit_bri_config()
             'FriendlyName'  => 'Payment Fee',
             'Type'          => 'text',
             'Size'          => '100',
-            'Default'       => '4000',
+            'Default'       => '4500',
             'Description'   => 'Fixed Amount Payment Fee Will Added to Invoice and Pay by Client.',
         ),
         // the dropdown field type renders a select menu of options
@@ -166,6 +166,8 @@ function xendit_bri_link($params)
             'invoice_duration'      => $expired,
             'payment_methods'       => ['BRI'],
             'currency'              => $currency,
+            'success_redirect_url'  => $url . '&paymentsuccess=true',
+            'failure_redirect_url'  => $url . '&paymentfailed=true',
         );
 
         // Api Key For Function
@@ -175,16 +177,15 @@ function xendit_bri_link($params)
         $xendit     = new XenditPHPClient($options);
         $req        = $xendit->createInvoice("$invoiceId", $total, $email, $description, $dataRequest);
         
-        // Get Redirect URL From Response
+        // Get and Redirect URL From Response
         $redirUrl   = $req['invoice_url'];
-
-        // Build a button with redirect url
-        $htmlOutput .= '<button onClick="javascript:window.location.href=\'' . $redirUrl . '\'">' . $langPayNow . '</button>';
+        header('Location:' . $redirUrl);
+        exit();
     } else {
         // Form For Generate URL XenInvoice
         $htmlOutput  = '<form method="post" action="' . $url . '&payurlgenerator=true">';
         $htmlOutput .= '<input type="hidden" name="payurlgenerator" value="true" />';
-        $htmlOutput .= '<input type="submit" value="Generate Payment" />';
+        $htmlOutput .= '<input type="submit" value="'.$langPayNow.'" />';
         $htmlOutput .= '</form>';
     }
 
