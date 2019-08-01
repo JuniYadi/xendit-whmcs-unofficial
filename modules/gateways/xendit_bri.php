@@ -1,6 +1,7 @@
 <?php
 /**
  * WHMCS Xendit Payment Gateway Module
+ * BRI Virtual Account by XenInvoice
  *
  * This is unofficial module, coming without guarantee
  *
@@ -110,6 +111,7 @@ function xendit_bri_config()
         ),
     );
 }
+
 /**
  * Payment link.
  *
@@ -127,10 +129,10 @@ function xendit_bri_config()
 function xendit_bri_link($params)
 {
     // System parameters
-	$companyName    = $params['companyname'];
-	$systemUrl      = $params['systemurl'];
+    $companyName    = $params['companyname'];
+    $systemUrl      = $params['systemurl'];
     $langPayNow     = $params['langpaynow'];
-    
+
     // Modules parameters
     $apikey         = $params['apikey'];
     $paymentfee     = $params['paymentfee'];
@@ -139,10 +141,10 @@ function xendit_bri_link($params)
 
     // Invoice parameters
     $amount         = (int)$params['amount'];
-	$invoiceId      = $params['invoiceid'];	
+    $invoiceId      = $params['invoiceid'];	
     $currency       = $params['currency'];
     $url            = $systemUrl . "viewinvoice.php?id=" . $invoiceId;
- 
+
 	// Client Parameters
     $email          = $params['clientdetails']['email'];
    
