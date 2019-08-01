@@ -134,6 +134,7 @@ function xendit_bri_link($params)
     $langPayNow     = $params['langpaynow'];
 
     // Modules parameters
+    $modulename     = $params['name'];
     $apikey         = $params['apikey'];
     $paymentfee     = $params['paymentfee'];
     $expired        = $params['expired'];
@@ -183,9 +184,11 @@ function xendit_bri_link($params)
         exit();
     } else {
         // Form For Generate URL XenInvoice
-        $htmlOutput  = '<form method="post" action="' . $url . '&payurlgenerator=true">';
+        $img         = $systemUrl . "/modules/gateways/xendit-images/bri.png"; 
+        $htmlOutput .= '<img src="' . $img . '"><br>'.$modulename.'<br>';
+        $htmlOutput .= '<form method="post" action="' . $url . '&payurlgenerator=true">';
         $htmlOutput .= '<input type="hidden" name="payurlgenerator" value="true" />';
-        $htmlOutput .= '<input type="submit" value="'.$langPayNow.'" />';
+        $htmlOutput .= '<input type="submit" class="btn btn-primary" value="'.$langPayNow.'" />';
         $htmlOutput .= '</form>';
     }
 

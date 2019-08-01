@@ -140,6 +140,7 @@ function xendit_bni_link($params)
     $sendemail      = $params['sendemail'];
 
     // Invoice parameters
+    $modulename     = $params['name'];
     $amount         = (int)$params['amount'];
     $invoiceId      = $params['invoiceid'];	
     $currency       = $params['currency'];
@@ -183,9 +184,11 @@ function xendit_bni_link($params)
         exit();
     } else {
         // Form For Generate URL XenInvoice
-        $htmlOutput  = '<form method="post" action="' . $url . '&payurlgenerator=true">';
+        $img         = $systemUrl . "/modules/gateways/xendit-images/bni.png"; 
+        $htmlOutput .= '<img src="' . $img . '"><br>'.$modulename.'<br>';
+        $htmlOutput .= '<form method="post" action="' . $url . '&payurlgenerator=true">';
         $htmlOutput .= '<input type="hidden" name="payurlgenerator" value="true" />';
-        $htmlOutput .= '<input type="submit" value="'.$langPayNow.'" />';
+        $htmlOutput .= '<input type="submit" class="btn btn-primary" value="'.$langPayNow.'" />';
         $htmlOutput .= '</form>';
     }
 
