@@ -83,8 +83,8 @@ function xendit_bri_config()
             'FriendlyName'  => 'Payment Fee',
             'Type'          => 'text',
             'Size'          => '100',
-            'Default'       => '4500',
-            'Description'   => 'Fixed Amount Payment Fee Will Added to Invoice and Pay by Client.',
+            'Default'       => '4950',
+            'Description'   => 'Fixed Amount Payment Fee Will Added to Invoice and Pay by Client. (Default: 4.500 + PPN 10% (From 4.500*10% = 450) = 4.950).',
         ),
         // the dropdown field type renders a select menu of options
         'expired' => array(
