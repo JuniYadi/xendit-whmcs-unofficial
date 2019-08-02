@@ -39,7 +39,7 @@
 * In WHMCS Admin Panel, Navigate to `Setup` => `Payments` => `Payment Gateways` => `All Payment Gateways`
 * Click on `Xendit XXXX` Name of Payment Gateway to Active
 
-#### Important For `Payment Fee` :
+#### Important For `Payment Fee` & `Only Work in Live/Production` :
 * Fee from Xendit it's not include PPN 10%, so when you input in `Payment Fee`, you need input all of fee you get from Xendit.
 * By Default, our modules set Fee to Rp. 4.950 (Default: 4.500 + PPN 10% (From 4.500*10% = 450) = 4.950)
 * When client click `Pay Now` button on invoice, they will get value `Total` + `Fee`
